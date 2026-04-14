@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MinhaPlay — O melhor multistream</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090f;
+    --bg2: #0f0f1a;
+    --bg3: #13131f;
+    --surface: #16162a;
+    --surface2: #1c1c33;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00ff62;
+    --accent2: rgb(94, 255, 0);
+
+    --btnaccent2: #ff9100;
+    --btnaccent: #ffae00;
+
+    --blue: #4f6ef7;
+    --blue2: #7a94ff;
+    --purple: #9b5de5;
+    --text: #f0f0f8;
+    --text2: #9999bb;
+    --text3: #6666aa;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --whatsapp: https://wa.me/557996561401?text=Quero%20testar%20o%20app;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-weight: 400;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  section, nav, footer { position: relative; z-index: 1; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    text-decoration: none;
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.08);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn:hover::after { opacity: 1; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--btnaccent), var(--btnaccent2));
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(255,107,53,0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 40px rgba(52, 78, 30, 0.5);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.2);
+    background: var(--surface);
+  }
+
+  .btn-whatsapp {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(37,211,102,0.3);
+  }
+
+  .btn-whatsapp:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 12px 40px rgba(255, 174, 0, 0.45);
+  }
+
+  .btn-lg { padding: 18px 40px; font-size: 1.05rem; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.3s, backdrop-filter 0.3s;
+  }
+
+  nav.scrolled {
+    background: rgba(9,9,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-head);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  .nav-logo .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(9,9,15,0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-head);
+    font-size: 1.8rem;
+    font-weight: 700;
+    transition: color 0.2s;
+  }
+
+  .mobile-menu a:hover { color: var(--accent); }
+
+  .mobile-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 2rem;
+    cursor: pointer;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 100px 24px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 60px;
+  }
+
+  .hero-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(79,110,247,0.12);
+    border: 1px solid rgba(79,110,247,0.25);
+    color: var(--blue2);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 50px;
+    margin-bottom: 28px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--blue);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .hero-title .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--text2);
+    max-width: 480px;
+    margin-bottom: 36px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 48px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-visual {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tv-mockup {
+    width: 100%;
+    max-width: 520px;
+    position: relative;
+  }
+
+  .tv-frame {
+    background: #1a1a2e;
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.08);
+    padding: 12px;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(255,255,255,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tv-screen {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a0d2e 50%, #0d1a2e 100%);
+    border-radius: 12px;
+    aspect-ratio: 16/10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .tv-screen-content {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .play-btn {
+    width: 64px;
+    height: 64px;
+    background: rgba(0, 255, 55, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(255,107,53,0.4);
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 40px rgba(127, 255, 53, 0.4); }
+    50% { box-shadow: 0 0 60px rgba(60, 255, 53, 0.7); }
+  }
+
+  .play-btn svg { margin-left: 4px; }
+
+  .tv-screen-title {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.05em;
+  }
+
+  .tv-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(ellipse at 50% 60%, rgba(79,110,247,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .screen-orbs {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    animation: orbFloat 8s ease-in-out infinite;
+  }
+
+  .orb-1 {
+    width: 160px; height: 160px;
+    background: rgba(79,110,247,0.25);
+    top: -30px; left: -30px;
+  }
+
+  .orb-2 {
+    width: 120px; height: 120px;
+    background: rgba(155,93,229,0.2);
+    bottom: -20px; right: -20px;
+    animation-delay: -4s;
+  }
+
+  .orb-3 {
+    width: 80px; height: 80px;
+    background: rgba(255,107,53,0.15);
+    top: 50%; right: 20%;
+    animation-delay: -2s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(10px, -10px); }
+  }
+
+  /* Floating cards on mockup */
+  .float-card {
+    position: absolute;
+    background: rgba(22,22,42,0.9);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    backdrop-filter: blur(20px);
+    font-size: 0.78rem;
+    white-space: nowrap;
+    animation: floatCard 6s ease-in-out infinite;
+  }
+
+  .float-card-1 {
+    top: 10%;
+    right: -40px;
+    animation-delay: 0s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .float-card-2 {
+    bottom: 15%;
+    left: -30px;
+    animation-delay: -3s;
+  }
+
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .fc-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .fc-info { display: flex; flex-direction: column; }
+  .fc-val { font-weight: 600; color: var(--text); font-size: 0.85rem; }
+  .fc-sub { color: var(--text3); font-size: 0.7rem; }
+
+  /* ── HERO BG ── */
+  .hero-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .hero-bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+  }
+
+  .hero-bg-orb-1 {
+    width: 600px; height: 600px;
+    background: rgba(79,110,247,0.08);
+    top: -200px; left: -100px;
+  }
+
+  .hero-bg-orb-2 {
+    width: 500px; height: 500px;
+    background: rgba(255,107,53,0.06);
+    bottom: -100px; right: -100px;
+  }
+
+  /* ── CONTAINERS ── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .section {
+    padding: 100px 0;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .section-label::before, .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+
+  .section-title {
+    font-family: var(--font-head);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--text2);
+    max-width: 520px;
+    line-height: 1.7;
+    font-weight: 300;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    text-align: center;
+    margin: 0 auto 48px;
+  }
+
+  .section-header { text-align: center; margin-bottom: 64px; }
+
+  /* ── STREAMING SERVICES ── */
+  #services {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    cursor: default;
+  }
+
+  .service-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255,255,255,0.15);
+    background: var(--surface2);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .service-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .service-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text2);
+    text-align: center;
+  }
+
+  /* ── BENEFITS ── */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .benefit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--blue));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .benefit-card:hover::before { transform: scaleX(1); }
+
+  .benefit-card:hover {
+    border-color: rgba(255,255,255,0.12);
+    background: var(--surface2);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+  }
+
+  .benefit-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+
+  .benefit-title {
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .benefit-desc {
+    font-size: 0.85rem;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ── MOVIES ── */
+  #movies { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+  .carousel-wrapper {
+    overflow: hidden;
+    margin: 0 -24px;
+    padding: 0 24px;
+    position: relative;
+  }
+
+  .carousel-wrapper::before, .carousel-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 80px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .carousel-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, var(--bg2), transparent);
+  }
+
+  .carousel-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, var(--bg2), transparent);
+  }
+
+  .carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 12px;
+    cursor: grab;
+  }
+
+  .carousel:active { cursor: grabbing; }
+  .carousel::-webkit-scrollbar { display: none; }
+
+  .movie-card {
+    flex: 0 0 180px;
+    scroll-snap-align: start;
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 2/3;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+  }
+
+  .movie-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    z-index: 2;
+  }
+
+  .movie-poster {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 20px 12px 16px;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.9) 100%);
+    position: relative;
+  }
+
+  .movie-poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .movie-poster > * { position: relative; z-index: 1; }
+
+  .movie-emoji {
+    font-size: 56px;
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .movie-title {
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+
+  .movie-genre {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+  }
+
+  .carousel-cta {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  /* ── PLANS ── */
+  .plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .plan-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    position: relative;
+    transition: all 0.35s ease;
+    overflow: hidden;
+  }
+
+  .plan-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(79,110,247,0.06), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .plan-card:hover::before { opacity: 1; }
+
+  .plan-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  }
+
+  .plan-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(255,107,53,0.08), var(--surface));
+  }
+
+  .plan-badge {
+    position: absolute;
+    top: -1px; right: 24px;
+    background: linear-gradient(135deg, var(--accent), #e84e1b);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 0 0 10px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .plan-name {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 24px;
+  }
+
+  .plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .plan-currency {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    color: var(--text2);
+    font-weight: 600;
+  }
+
+  .plan-amount {
+    font-family: var(--font-head);
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .plan-period {
+    font-size: 0.85rem;
+    color: var(--text3);
+  }
+
+  .plan-note {
+    font-size: 0.8rem;
+    color: var(--text3);
+    margin-bottom: 28px;
+  }
+
+  .plan-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+
+  .plan-features {
+    list-style: none;
+    margin-bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: var(--text2);
+  }
+
+  .plan-features li::before {
+    content: '✓';
+    width: 20px;
+    height: 20px;
+    background: rgba(37,211,102,0.15);
+    color: #25d366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── CTA ── */
+  #cta {
+    text-align: center;
+    padding: 120px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(79,110,247,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(255,107,53,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-family: var(--font-head);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    color: var(--text);
+    position: relative;
+  }
+
+  .cta-sub {
+    font-size: 1.05rem;
+    color: var(--text2);
+    margin-bottom: 40px;
+    font-weight: 300;
+    position: relative;
+  }
+
+  .cta-btns {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 60px 0 30px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .footer-brand .nav-logo {
+    margin-bottom: 16px;
+    display: inline-flex;
+  }
+
+  .footer-brand p {
+    font-size: 0.88rem;
+    color: var(--text2);
+    line-height: 1.7;
+    max-width: 280px;
+  }
+
+  .footer-col h4 {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-col ul a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+
+  .footer-col ul a:hover { color: var(--accent); }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-copy {
+    font-size: 0.82rem;
+    color: var(--text3);
+  }
+
+  .footer-wpp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #25d366;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .footer-wpp:hover { opacity: 0.8; }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    #hero {
+      flex-direction: column;
+      text-align: center;
+      padding-top: 120px;
+    }
+
+    .hero-sub { max-width: 100%; }
+
+    .hero-btns { justify-content: center; }
+
+    .hero-stats { justify-content: center; }
+
+    .hero-visual { width: 100%; }
+
+    .float-card-1 { right: 0; }
+    .float-card-2 { left: 0; }
+
+    .nav-links, .nav-actions { display: none; }
+    .hamburger { display: flex; }
+
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .section { padding: 70px 0; }
+    .float-card { display: none; }
+    .movie-card { flex: 0 0 140px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="hero-bg">
+  <div class="hero-bg-orb hero-bg-orb-1"></div>
+  <div class="hero-bg-orb hero-bg-orb-2"></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">▶</div>
+    Minha<span>Play</span>
+  </a>
+  
+  <ul class="nav-links">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#benefits">Benefícios</a></li>
+    <li><a href="#movies">Filmes</a></li>
+    <li><a href="#plans">Planos</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="https://wa.me/557996561401?text=Quero%20testar%20o%20app" class="btn btn-primary" target="_blank" rel="noopener">
+      Teste Grátis
+    </a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="toggleMenu()">✕</button>
+  <a href="#services" onclick="toggleMenu()">Serviços</a>
+  <a href="#benefits" onclick="toggleMenu()">Benefícios</a>
+  <a href="#movies" onclick="toggleMenu()">Filmes</a>
+  <a href="#plans" onclick="toggleMenu()">Planos</a>
+  <a href="https://wa.me/557996561401?text=Quero%20testar%20o%20app" class="btn btn-primary" target="_blank" rel="noopener">Teste Grátis</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🟢 Disponível agora</div>
+    <h1 class="hero-title">
+      Assista canais, filmes e séries<br>
+      <span class="highlight">em um só lugar</span>
+    </h1>
+    <p class="hero-sub">
+      Mais de 2000 canais ao vivo, filmes e séries em HD, Full HD e 4K. Funciona no celular, TV, TV Box, Firestick e PC — com suporte pelo WhatsApp.
+    </p>
+    <div class="hero-btns">
+      <a href="https://wa.me/557996561401?text=Quero%20testar%20o%20app" class="btn btn-primary btn-lg" target="_blank" rel="noopener">
+        ▶ Teste Grátis
+      </a>
+      <a href="#plans" class="btn btn-secondary btn-lg">
+        Ver Planos
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">2000+</span>
+        <span class="stat-label">Canais</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">4K</span>
+        <span class="stat-label">Qualidade</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">Vários</span>
+        <span class="stat-label">Dispositivos</span>
+      </div>
+    </div>
+  </div>
+
+<div class="hero-visual">
+  <div class="tv-mockup">
+    <div class="tv-frame">
+      <div class="tv-screen">
+
+        <img class="tv-slide slide-1" src="images/promocional/1.jpeg" alt="">
+        <img class="tv-slide slide-2" src="images/promocional/2.jpeg" alt="">
+        <img class="tv-slide slide-3" src="images/promocional/3.jpeg" alt="">
+
+        <div class="screen-orbs">
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          <div class="orb orb-3"></div>
+        </div>
+
+      </div>
+    </div>
+      <div class="tv-glow"></div>
+
+      <div class="float-card float-card-1">
+        <div class="fc-icon">📺</div>
+        <div class="fc-info">
+          <span class="fc-val">2000+ Canais</span>
+          <span class="fc-sub">Ao vivo agora</span>
+        </div>
+      </div>
+
+      <div class="float-card float-card-2">
+        <div class="fc-info">
+          <span class="fc-val">⚡ Qualidade 4K</span>
+          <span class="fc-sub">HD · Full HD · 4K</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Plataformas</div>
+      <h2 class="section-title">Todos os streamings em um app</h2>
+      <p class="section-sub">Acesso ao conteúdo das maiores plataformas, sem precisar de múltiplas assinaturas.</p>
+    </div>
+
+    <div class="services-grid">
+        <div class="service-card reveal reveal-delay-1">
+        <div class="service-logo">
+            <img src="images/netflix.png" alt="Netflix">
+        </div>
+        <div class="service-name">Netflix</div>
+        </div>
+        
+      <div class="service-card reveal reveal-delay-2">
+          <div class="service-logo">
+            <img src="images/primevideo.png" alt="Prime Video">
+        </div>
+        <div class="service-name">Prime Video</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+          <div class="service-logo">
+            <img src="images/disney.png" alt="Disney">
+        </div>
+        <div class="service-name">Disney+</div>
+      </div>
+      <div class="service-card reveal reveal-delay-4">
+        <div class="service-logo">
+            <img src="images/max.png" alt="Max">
+        </div>
+        <div class="service-name">Max</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-logo">
+            <img src="images/globoplay.png" alt="Globoplay">
+        </div>
+        <div class="service-name">Globoplay</div>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-logo">
+            <img src="images/paramount.png" alt="Paramount">
+        </div>
+        <div class="service-name">Paramount+</div>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-logo">
+            <img src="images/telecine.png" alt="Telecine">
+        </div>
+        <div class="service-name">Telecine</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-logo">
+            <img src="images/sportv.png" alt="SporTV">
+        </div>
+        <div class="service-name">SporTV</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Vantagens</div>
+      <h2 class="section-title">Por que escolher o MinhaPlay?</h2>
+      <p class="section-sub">Tudo que você precisa para o entretenimento completo da família.</p>
+    </div>
+
+    <div class="benefits-grid">
+      <div class="benefit-card reveal reveal-delay-1">
+        <div class="benefit-icon" style="background:rgba(255,107,53,0.12)">📡</div>
+        <h3 class="benefit-title">+2000 Canais ao Vivo</h3>
+        <p class="benefit-desc">Canais nacionais e internacionais, esportes, notícias e muito mais, transmitidos ao vivo 24h.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-2">
+        <div class="benefit-icon" style="background:rgba(79,110,247,0.12)">🎬</div>
+        <h3 class="benefit-title">Filmes e Séries Atualizados</h3>
+        <p class="benefit-desc">Catálogo atualizado constantemente com os lançamentos mais recentes do cinema e das séries.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-3">
+        <div class="benefit-icon" style="background:rgba(155,93,229,0.12)">🔮</div>
+        <h3 class="benefit-title">HD · Full HD · 4K</h3>
+        <p class="benefit-desc">Qualidade de imagem cinematográfica diretamente na sua tela, com som surround.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-4">
+        <div class="benefit-icon" style="background:rgba(37,211,102,0.12)">📱</div>
+        <h3 class="benefit-title">TV, TV Box, Celular, Firestick e Pc</h3>
+        <p class="benefit-desc">Um app, todos os seus dispositivos. Assista onde quiser, quando quiser, sem limites.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-1">
+        <div class="benefit-icon" style="background:rgba(37,211,102,0.12)">💬</div>
+        <h3 class="benefit-title">Suporte via WhatsApp</h3>
+        <p class="benefit-desc">Equipe de suporte disponível pelo WhatsApp para ajudar com qualquer dúvida rapidamente.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-2">
+        <div class="benefit-icon" style="background:rgba(255,200,0,0.12)">⚡</div>
+        <h3 class="benefit-title">Alta Estabilidade</h3>
+        <p class="benefit-desc">Servidor robusto com uptime alto, sem travamentos e com carregamento ultrarrápido.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MOVIES -->
+<section id="movies" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Catálogo</div>
+      <h2 class="section-title">Filmes e Séries Populares</h2>
+      <p class="section-sub">Arraste para ver mais títulos disponíveis no MinhaPlay.</p>
+    </div>
+
+    <div class="carousel-wrapper reveal">
+      <div class="carousel" id="carousel">
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#1a0a2e,#3d1060)">
+            <span class="movie-emoji">🦸</span>
+            <div class="movie-title">Universo Marvel</div>
+            <div class="movie-genre">Ação · Aventura</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#0a1628,#1a3060)">
+            <span class="movie-emoji">🚀</span>
+            <div class="movie-title">Ficção Científica</div>
+            <div class="movie-genre">Sci-Fi · Drama</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#280a0a,#602020)">
+            <span class="movie-emoji">👻</span>
+            <div class="movie-title">Terror & Suspense</div>
+            <div class="movie-genre">Horror · Thriller</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#0a2818,#1a6040)">
+            <span class="movie-emoji">🎭</span>
+            <div class="movie-title">Drama Nacional</div>
+            <div class="movie-genre">Drama · Romance</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#1a1a0a,#404010)">
+            <span class="movie-emoji">🏆</span>
+            <div class="movie-title">Futebol Ao Vivo</div>
+            <div class="movie-genre">Esportes · Live</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#1a0a1a,#501050)">
+            <span class="movie-emoji">👑</span>
+            <div class="movie-title">Séries Premium</div>
+            <div class="movie-genre">Drama · Série</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#0a1a28,#104060)">
+            <span class="movie-emoji">🎬</span>
+            <div class="movie-title">Clássicos do Cinema</div>
+            <div class="movie-genre">Clássico · Arte</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#280a18,#601040)">
+            <span class="movie-emoji">😂</span>
+            <div class="movie-title">Comédia & Stand-up</div>
+            <div class="movie-genre">Comédia · Live</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#0a2028,#105060)">
+            <span class="movie-emoji">🎵</span>
+            <div class="movie-title">Documentários</div>
+            <div class="movie-genre">Docs · Cultura</div>
+          </div>
+        </div>
+        <div class="movie-card">
+          <div class="movie-poster" style="background:linear-gradient(135deg,#281a0a,#604020)">
+            <span class="movie-emoji">🧒</span>
+            <div class="movie-title">Infantil & Família</div>
+            <div class="movie-genre">Kids · Animação</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="carousel-cta reveal">
+      <a href="https://wa.me/557996561401?text=Quero%20testar%20o%20app" class="btn btn-primary btn-lg" target="_blank" rel="noopener">
+        ▶ Começar Teste
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section id="plans" class="section">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">Preços</div>
+      <h2 class="section-title">Planos acessíveis para todos</h2>
+      <p class="section-sub">Escolha o plano ideal e comece a assistir agora mesmo.</p>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-card reveal reveal-delay-1">
+        <div class="plan-name">Mensal</div>
+        <div class="plan-price">
+          <span class="plan-currency">R$</span>
+          <span class="plan-amount">35</span>
+          <span class="plan-period">/mês</span>
+        </div>
+        <div class="plan-note">Cobrado mensalmente</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>2000+ canais ao vivo</li>
+          <li>Filmes e séries</li>
+          <li>Qualidade HD e Full HD</li>
+          <li>Suporte WhatsApp</li>
+                    <li>Sem travamentos</li>
+        </ul>
+        <a href="https://wa.me/557996561401?text=Quero%20o%20plano%20mensal" class="btn btn-primary" target="_blank" rel="noopener" style="width:100%;justify-content:center">
+          ▶ Testar Agora
+        </a>
+      </div>
+
+      <div class="plan-card featured reveal reveal-delay-2">
+        <div class="plan-badge">⭐ Mais Popular</div>
+        <div class="plan-name">Trimestral</div>
+        <div class="plan-price">
+          <span class="plan-currency">R$</span>
+          <span class="plan-amount">99</span>
+          <span class="plan-period">/3 meses</span>
+        </div>
+        <div class="plan-note">Equivale a R$ 33/mês</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Tudo do plano Mensal</li>
+          <li>Qualidade 4K inclusa</li>
+          <li>3 dispositivos simultâneos</li>
+          <li>Suporte prioritário</li>
+          <li>Sem travamentos</li>
+        </ul>
+        <a href="https://wa.me/557996561401?text=Quero%20o%20plano%20trimestral" class="btn btn-primary" target="_blank" rel="noopener" style="width:100%;justify-content:center">
+          ▶ Testar Agora
+        </a>
+      </div>
+
+      <div class="plan-card reveal reveal-delay-3">
+        <div class="plan-name">Anual</div>
+        <div class="plan-price">
+          <span class="plan-currency">R$</span>
+          <span class="plan-amount">349</span>
+          <span class="plan-period">/ano</span>
+        </div>
+        <div class="plan-note">Equivale a R$ 29/mês</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Tudo do plano Trimestral</li>
+          <li>Dispositivos ilimitados</li>
+          <li>Conteúdo PPV incluso</li>
+          <li>Acesso antecipado</li>
+          <li>Suporte VIP 24h</li>
+        </ul>
+
+        <a href="https://wa.me/557996561401?text=Quero%20o%20plano%20anual" class="btn btn-primary" target="_blank" rel="noopener" style="width:100%;justify-content:center">
+          ▶ Testar Agora
+        </a>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <h2 class="cta-title reveal">
+      Teste grátis<br>
+      <span style="color:var(--accent)">agora mesmo</span>
+    </h2>
+    <p class="cta-sub reveal reveal-delay-1">
+      Sem compromisso. Sem cartão de crédito. Comece em menos de 2 minutos pelo WhatsApp.
+    </p>
+    <div class="cta-btns reveal reveal-delay-2">
+<a href="https://wa.me/557996561401?text=Quero%20testar%20o%20app" 
+   class="btn btn-whatsapp btn-lg" 
+   target="_blank" 
+   rel="noopener">
+
+  <svg class="whatsapp-icon" viewBox="0 0 32 32" width="18" height="18" fill="currentColor">
+    <path d="M19.11 17.39c-.29-.14-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.29-.74.94-.9 1.13-.17.19-.33.22-.62.07-.29-.14-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.54-.88-2.11-.23-.55-.47-.48-.64-.49h-.55c-.19 0-.5.07-.76.36-.26.29-1 1-1 2.43s1.02 2.82 1.16 3.01c.14.19 2 3.05 4.85 4.28.68.29 1.21.46 1.63.59.68.22 1.3.19 1.79.12.55-.08 1.7-.69 1.94-1.35.24-.66.24-1.23.17-1.35-.07-.12-.26-.19-.55-.33z"/>
+    <path d="M16 3C8.82 3 3 8.82 3 16c0 2.82.92 5.43 2.47 7.54L4 29l5.64-1.46A12.93 12.93 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3zm0 23.6c-2.37 0-4.57-.7-6.41-1.9l-.46-.29-3.35.87.89-3.26-.3-.47A10.55 10.55 0 0 1 5.4 16C5.4 10.2 10.2 5.4 16 5.4S26.6 10.2 26.6 16 21.8 26.6 16 26.6z"/>
+  </svg>
+
+  Falar no WhatsApp
+</a>
+      <a href="#plans" class="btn btn-secondary btn-lg">
+        Ver Planos
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">
+          <div class="logo-icon">▶</div>
+          Minha<span>Play</span>
+        </a>
+        <p>O melhor entretenimento em um único aplicativo. Canais ao vivo, filmes e séries para toda a família.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegar</h4>
+        <ul>
+          <li><a href="#services">Serviços</a></li>
+          <li><a href="#benefits">Benefícios</a></li>
+          <li><a href="#movies">Catálogo</a></li>
+          <li><a href="#plans">Planos</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li>
+            <a href="https://wa.me/557996561401?text=Como%20funciona%20o%20app" target="_blank" rel="noopener">
+                Tire sua dúvida conosco
+            </a>
+          </li>
+          <li><a href="#plans">Assinar agora</a></li>
+          <li><a href="#cta">Teste grátis</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 MinhaPlay. Todos os direitos reservados.</p>
+      <a href="https://wa.me/557996561401?text=Quero%20testar%20o%20app" class="footer-wpp" target="_blank" rel="noopener">
+          <svg class="whatsapp-icon" viewBox="0 0 32 32" width="18" height="18" fill="currentColor">
+    <path d="M19.11 17.39c-.29-.14-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.29-.74.94-.9 1.13-.17.19-.33.22-.62.07-.29-.14-1.22-.45-2.33-1.44-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.14-.64-1.54-.88-2.11-.23-.55-.47-.48-.64-.49h-.55c-.19 0-.5.07-.76.36-.26.29-1 1-1 2.43s1.02 2.82 1.16 3.01c.14.19 2 3.05 4.85 4.28.68.29 1.21.46 1.63.59.68.22 1.3.19 1.79.12.55-.08 1.7-.69 1.94-1.35.24-.66.24-1.23.17-1.35-.07-.12-.26-.19-.55-.33z"/>
+    <path d="M16 3C8.82 3 3 8.82 3 16c0 2.82.92 5.43 2.47 7.54L4 29l5.64-1.46A12.93 12.93 0 0 0 16 29c7.18 0 13-5.82 13-13S23.18 3 16 3zm0 23.6c-2.37 0-4.57-.7-6.41-1.9l-.46-.29-3.35.87.89-3.26-.3-.47A10.55 10.55 0 0 1 5.4 16C5.4 10.2 10.2 5.4 16 5.4S26.6 10.2 26.6 16 21.8 26.6 16 26.6z"/>
+  </svg>
+
+  Falar no WhatsApp
+</a>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── NAV SCROLL ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ── MOBILE MENU ──
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+    document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+  }
+
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // ── CAROUSEL DRAG ──
+  const carousel = document.getElementById('carousel');
+  let isDragging = false, startX, scrollLeft;
+
+  carousel.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+    carousel.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    carousel.style.userSelect = '';
+  });
+
+  carousel.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const x = e.pageX - carousel.offsetLeft;
+    carousel.scrollLeft = scrollLeft - (x - startX) * 1.2;
+  });
+
+  // Touch support
+  carousel.addEventListener('touchstart', e => {
+    startX = e.touches[0].pageX - carousel.offsetLeft;
+    scrollLeft = carousel.scrollLeft;
+  }, { passive: true });
+
+  carousel.addEventListener('touchmove', e => {
+    const x = e.touches[0].pageX - carousel.offsetLeft;
+    carousel.scrollLeft = scrollLeft - (x - startX);
+  }, { passive: true });
+
+  // ── SMOOTH ANCHOR ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
